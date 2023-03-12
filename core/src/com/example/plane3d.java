@@ -1,10 +1,9 @@
 package com.example;
-
+import com.tools.stools;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.Environment;
@@ -13,7 +12,6 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Array;
 
@@ -45,7 +43,7 @@ public class plane3d implements ApplicationListener {
         cam.update();
 
         assets = new AssetManager();
-        assets.load("assets/ship.g3db", Model.class);
+        assets.load(stools.assetaddress("ship.g3db"), Model.class);
         loading = true;
 
         camController = new CameraInputController(cam);
@@ -59,7 +57,7 @@ public class plane3d implements ApplicationListener {
     //完成加载
     private void doneLoading() {
         //
-        Model ship = assets.get("assets/ship.g3db", Model.class);
+        Model ship = assets.get(stools.assetaddress("ship.g3db"), Model.class);
         //实例化36艘飞船,为什么用float当循环,因为要通过float来确定飞船位置
         for (float x = -5f; x <= 5f; x += 2f) {
             for (float z = -5f; z <= 5f; z += 2f) {
