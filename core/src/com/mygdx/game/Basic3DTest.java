@@ -28,9 +28,11 @@ public class Basic3DTest implements ApplicationListener {
 		camController = new CameraInputController(cam);
 		Gdx.input.setInputProcessor(camController);
 		cam.update();
-		{//添加光照
+		{//环境设置
 			environment = new Environment();
+			//添加环境光
 			environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
+			//添加平行光
 			environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 		}
 		ModelBuilder modelBuilder = new ModelBuilder();
