@@ -98,7 +98,7 @@ public class xiangqitest implements ApplicationListener {
         int i=0;
         for (ModelInstance qi:qizi) {
             i++;
-            qi.transform.trn(0,2*(i/2),0);
+            qi.transform.trn(0,2*(i % 2),0);
         }
         //实例化36艘飞船,为什么用float当循环,因为要通过float来确定飞船位置
 //        for (float x = -5f; x <= 5f; x += 2f) {
