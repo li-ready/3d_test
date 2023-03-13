@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Array;
 import com.tools.stools;
@@ -29,6 +30,8 @@ public class xiangqitest implements ApplicationListener {
     private CameraInputController camController;
     //模型集合,所有模型都在这,进行统一的模型资源管理
     public Array<ModelInstance> instances = new Array<ModelInstance>();
+    public ModelInstance space;
+    public Array<ModelInstance> qizi=new Array<ModelInstance>();
     @Override
     public void create () {
 
@@ -58,10 +61,45 @@ public class xiangqitest implements ApplicationListener {
     //完成加载fbx-conv -f -v qipan.fbx qipan.g3db
     private void doneLoading() {
         //
-        Model qipan = assets.get(stools.assetaddress("source/ChineseChess.g3db"), Model.class);
-        ModelInstance qipanInstance =new ModelInstance(qipan);
-        qipanInstance.transform.setToTranslation(0, 0, 0);
-        instances.add(qipanInstance);
+        Model model = assets.get(stools.assetaddress("source/ChineseChess.g3db"), Model.class);
+        for (int i = 0; i < model.nodes.size; i++) {
+            String id = model.nodes.get(i).id;
+            ModelInstance instance = new ModelInstance(model, id);
+            Node node = instance.getNode(id);
+
+            instance.transform.set(node.globalTransform);
+            node.translation.set(0,0,0);
+            node.scale.set(1,1,1);
+            node.rotation.idt();
+            instance.calculateTransforms();
+            if(id.equals("QiPan"))
+            {
+                space=instance;
+            }
+            else
+            {
+                instances.add(instance);
+                qizi.add(instance);
+            }
+//            if (id.equals("space")) {
+//                space = instance;
+//                continue;
+//            }
+//
+//            instances.add(instance);
+//
+//            if (id.equals("ship"))
+//                ship = instance;
+//            else if (id.startsWith("block"))
+//                blocks.add(instance);
+//            else if (id.startsWith("invader"))
+//                invaders.add(instance);
+        }
+        int i=0;
+        for (ModelInstance qi:qizi) {
+            i++;
+            qi.transform.trn(0,2*(i/2),0);
+        }
         //实例化36艘飞船,为什么用float当循环,因为要通过float来确定飞船位置
 //        for (float x = -5f; x <= 5f; x += 2f) {
 //            for (float z = -5f; z <= 5f; z += 2f) {
@@ -88,6 +126,8 @@ public class xiangqitest implements ApplicationListener {
         modelBatch.begin(cam);
         //渲染instances集合,把所有模型都渲染
         modelBatch.render(instances, environment);
+        if (space != null)
+            modelBatch.render(space);
         modelBatch.end();
     }
 
