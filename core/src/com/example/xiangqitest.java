@@ -13,11 +13,18 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
+import com.com.Gameinstance.*;
 import com.tools.stools;
-
+import com.badlogic.gdx.math.Vector3;
 public class xiangqitest implements ApplicationListener {
+    private Vector3 vector3Temp1;
+    private Vector3 vector3Temp2;private Vector3 vector3Temp3;private Vector3 vector3Temp4;
+   //上一帧结束到现在经过的时间
+    private chess chess1;
+    private float chessheight;
+    private float graphicsdeltaTime;
     //判断是否正在加载
     public boolean loading;
     public AssetManager assets;
@@ -27,18 +34,32 @@ public class xiangqitest implements ApplicationListener {
     private ModelLoader loader;
     private Model model;
     private ModelInstance instance;
-    private CameraInputController camController;
+    private cameraInputTest camController;
     //模型集合,所有模型都在这,进行统一的模型资源管理
     public Array<ModelInstance> instances = new Array<ModelInstance>();
     public ModelInstance space;
-    public Array<ModelInstance> qizi=new Array<ModelInstance>();
+    private int step;
+    private Vector3 direction;
+    private boolean key0;
+    private Array<chess> chessArray;
+    private float chessy=0;
     @Override
     public void create () {
-
+        vector3Temp1=new Vector3();
+        vector3Temp2=new Vector3();
+        vector3Temp3=new Vector3();
+        vector3Temp4=new Vector3();
+        chessArray=new Array<chess>();
+        key0=false;
+        chess1 =new chess();
+        graphicsdeltaTime=0;
+        direction=new Vector3(-3,0,-3);
+        step=0;
         modelBatch = new ModelBatch();
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
+        Gdx.graphics.setWindowedMode(1280,720);
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(7f, 7f, 100f);
         cam.lookAt(0,0,0);
@@ -50,27 +71,30 @@ public class xiangqitest implements ApplicationListener {
         assets.load(stools.assetaddress("source/ChineseChess.g3db"), Model.class);
         loading = true;
 
-        camController = new CameraInputController(cam);
-        Gdx.input.setInputProcessor(camController);
+        camController = new cameraInputTest(cam);
+        //Gdx.input.setInputProcessor(camController);
     }
 
     @Override
     public void resize(int width, int height) {
 
     }
+
     //完成加载fbx-conv -f -v qipan.fbx qipan.g3db
     private void doneLoading() {
         //
+        String id;
         Model model = assets.get(stools.assetaddress("source/ChineseChess.g3db"), Model.class);
-        for (int i = 0; i < model.nodes.size; i++) {
-            String id = model.nodes.get(i).id;
+        for (Node node1:model.nodes) {
+
+
+            id = node1.id;
             ModelInstance instance = new ModelInstance(model, id);
             Node node = instance.getNode(id);
-
             instance.transform.set(node.globalTransform);
-            node.translation.set(0,0,0);
-            node.scale.set(1,1,1);
-            node.rotation.idt();
+            node.translation.set(0,0,0);//重置坐标
+            node.scale.set(1,1,1);//重置放缩比例
+            node.rotation.idt();//重置方向
             instance.calculateTransforms();
             if(id.equals("QiPan"))
             {
@@ -79,39 +103,14 @@ public class xiangqitest implements ApplicationListener {
             else
             {
                 instances.add(instance);
-                qizi.add(instance);
+                chessArray.add(new chess(instance));
             }
-//            if (id.equals("space")) {
-//                space = instance;
-//                continue;
-//            }
-//
-//            instances.add(instance);
-//
-//            if (id.equals("ship"))
-//                ship = instance;
-//            else if (id.startsWith("block"))
-//                blocks.add(instance);
-//            else if (id.startsWith("invader"))
-//                invaders.add(instance);
         }
-        int i=0;
-        for (ModelInstance qi:qizi) {
-            i++;
-            qi.transform.trn(0,2*(i % 2),0);
-        }
-        //实例化36艘飞船,为什么用float当循环,因为要通过float来确定飞船位置
-//        for (float x = -5f; x <= 5f; x += 2f) {
-//            for (float z = -5f; z <= 5f; z += 2f) {
-//                ModelInstance shipInstance = new ModelInstance(ship);
-//                shipInstance.transform.setToTranslation(x, 0, z);
-//                instances.add(shipInstance);
-//            }
-//        }
-//        ModelInstance shipInstance = new ModelInstance(ship);
-//        //把新的"飞船"实例添加进模型资源管理器
-//        instances.add(shipInstance);
-//        //完成了所有的模型加载,加载标志值0
+        Vector3 location = chessArray.first().GetLocation();
+        chessheight=location.y;
+        //System.out.println(location.x+" ; "+location.y+" ; "+location.z);
+        //qizi.first().
+        //qizi.first().transform.setToTranslation(location.x,location.y,location.z);
         loading = false;
     }
 
@@ -119,10 +118,29 @@ public class xiangqitest implements ApplicationListener {
     public void render() {
         if (loading && assets.update())
             doneLoading();
-        camController.update();
+        graphicsdeltaTime=Gdx.graphics.getDeltaTime();
+        if(!Gdx.input.isButtonPressed(0)){
+            if ((!key0) && Gdx.input.isTouched())
+                camController.touchDown(Gdx.input.getX(), Gdx.input.getY(), 0, 0);
+
+            if (key0 && Gdx.input.isTouched())
+                camController.touchDragged(Gdx.input.getX(), Gdx.input.getY(), 0);
+
+            if (key0 && !Gdx.input.isTouched())
+                camController.touchUp(Gdx.input.getX(), Gdx.input.getY(), 0, 0);
+        }
+        else
+        {
+            Ray ray = cam.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+            vector3Temp3 =(vector3Temp1.set(cam.position).add(vector3Temp2.set(ray.direction).setLength((cam.position.y-chessheight)/(ray.direction.dot(0,-1,0)/ray.direction.len()))) ).sub(chessArray.first().GetLocation());
+            vector3Temp3.y=0;
+            chessArray.first().TranslateByVector3(vector3Temp3.setLength(vector3Temp3.len()*Gdx.graphics.getDeltaTime()*1));
+        }
+        cam.update();
+        key0=Gdx.input.isTouched();
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-
+        float deltaTime = Gdx.graphics.getDeltaTime();
         modelBatch.begin(cam);
         //渲染instances集合,把所有模型都渲染
         modelBatch.render(instances, environment);
