@@ -45,6 +45,7 @@ public class xiangqitest implements ApplicationListener {
     private float chessy=0;
     @Override
     public void create () {
+
         vector3Temp1=new Vector3();
         vector3Temp2=new Vector3();
         vector3Temp3=new Vector3();
@@ -59,7 +60,7 @@ public class xiangqitest implements ApplicationListener {
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-        Gdx.graphics.setWindowedMode(1280,720);
+        Gdx.graphics.setWindowedMode(1920,1080);
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(7f, 7f, 100f);
         cam.lookAt(0,0,0);
@@ -138,8 +139,10 @@ public class xiangqitest implements ApplicationListener {
         }
         cam.update();
         key0=Gdx.input.isTouched();
+        //Gdx.gl20.glEnable(GL20.GL_SAMPLE_ALPHA_TO_COVERAGE);
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT|(Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
+        //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
         float deltaTime = Gdx.graphics.getDeltaTime();
         modelBatch.begin(cam);
         //渲染instances集合,把所有模型都渲染

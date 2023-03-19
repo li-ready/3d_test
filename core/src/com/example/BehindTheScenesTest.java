@@ -1,21 +1,24 @@
 package com.example;
-import com.badlogic.gdx.graphics.g3d.model.Node;
-import com.badlogic.gdx.math.Vector3;
-import com.tools.stools;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.ModelLoader;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
+import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
+import com.badlogic.gdx.graphics.g3d.model.Node;
+import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import com.badlogic.gdx.graphics.g3d.utils.TextureProvider;
 import com.badlogic.gdx.utils.Array;
-public class LoadSceneTest implements ApplicationListener {
+import com.badlogic.gdx.utils.JsonReader;
+
+public class BehindTheScenesTest implements ApplicationListener {
     private String data;
     public PerspectiveCamera cam;
     public CameraInputController camController;
@@ -30,10 +33,10 @@ public class LoadSceneTest implements ApplicationListener {
     public Array<ModelInstance> invaders = new Array<ModelInstance>();
     public ModelInstance ship;
     public ModelInstance space;
-
+    public Model model;
     @Override
     public void create () {
-        data ="assets/loadscene/";
+        data ="assets/behindscenes/data";
         modelBatch = new ModelBatch();
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
@@ -49,14 +52,18 @@ public class LoadSceneTest implements ApplicationListener {
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
 
-        assets = new AssetManager();
-        assets.load(data+"/invaderscene.g3db", Model.class);
+        ModelLoader modelLoader = new G3dModelLoader(new JsonReader());
+        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal(data+"/invaderscene.g3dj"));
+        model = new Model(modelData, new TextureProvider.FileTextureProvider());
         loading = true;
     }
 //stools.assetaddress("loadscene/spacesphere.obj")
 
     private void doneLoading() {
-        Model model = assets.get(data+"/invaderscene.g3db", Model.class);
+        //在模型还是整体时,改变"bloack_default1"这一所有方块都共用的材质属性中的漫反射颜色,所有的"方块"都会被改变
+        // 在后来的将所有模型节点独立出去后,"方块"们依然会集成同样的材质性质
+       /* Material blockMaterial = model.getMaterial("block_default1");
+        blockMaterial.set(ColorAttribute.createDiffuse(Color.YELLOW));*/
         for (int i = 0; i < model.nodes.size; i++) {
             String id = model.nodes.get(i).id;
             ModelInstance instance = new ModelInstance(model, id);
@@ -82,13 +89,19 @@ public class LoadSceneTest implements ApplicationListener {
             else if (id.startsWith("invader"))
                 invaders.add(instance);
         }
-
+        //在所有的节点都独立出去后,所有的"方块"都有一份独立的材质属性,这时候我们就能遍历单独更改他们的材质属性了
+        for (ModelInstance block : blocks) {
+            float r = 0.5f + 0.5f * (float)Math.random();
+            float g = 0.5f + 0.5f * (float)Math.random();
+            float b = 0.5f + 0.5f * (float)Math.random();
+            block.materials.get(0).set(ColorAttribute.createDiffuse(r, g, b, 1));
+        }
         loading = false;
     }
 
     @Override
     public void render () {
-        if (loading && assets.update())
+        if (loading)
             doneLoading();
         camController.update();
 
