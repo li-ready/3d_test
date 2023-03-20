@@ -66,7 +66,7 @@ public class ShaderTest implements ApplicationListener {
         blockPart.setRenderable(renderable);
         renderable.environment = null;
         renderable.worldTransform.idt();
-        //下面一段是讲着色器切换为只渲染顶点的模式
+        //下面一段是将着色器切换为只渲染顶点的模式
 /*
         renderable.meshPart.primitiveType = GL20.GL_POINTS;
 */
