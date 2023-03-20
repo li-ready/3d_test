@@ -3,27 +3,23 @@ package com.example;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.loaders.ModelLoader;
-//import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.GLTexture;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
+import com.badlogic.gdx.graphics.VertexAttributes;
 import com.badlogic.gdx.graphics.g3d.*;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.G3dModelLoader;
-import com.badlogic.gdx.graphics.g3d.model.Node;
 import com.badlogic.gdx.graphics.g3d.model.NodePart;
 import com.badlogic.gdx.graphics.g3d.model.data.ModelData;
 import com.badlogic.gdx.graphics.g3d.shaders.DefaultShader;
-import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
-import com.badlogic.gdx.graphics.g3d.utils.DefaultTextureBinder;
-import com.badlogic.gdx.graphics.g3d.utils.RenderContext;
-import com.badlogic.gdx.graphics.g3d.utils.TextureProvider;
+import com.badlogic.gdx.graphics.g3d.utils.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.JsonReader;
 
-public class BehindTheScenesTest3 implements ApplicationListener {
-    private String data;
+public class ShaderTest implements ApplicationListener {
+    private String assets;
+    private String shaders;
     public PerspectiveCamera cam;
     public CameraInputController camController;
     public ModelBatch modelBatch;
@@ -43,14 +39,15 @@ public class BehindTheScenesTest3 implements ApplicationListener {
 
     @Override
     public void create () {
-        data ="assets/behindscenes/data";
+        assets ="assets/behindscenes/data";
+        shaders="shaders/";
         modelBatch = new ModelBatch();
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
 
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        cam.position.set(0f, 7f, 10f);
+        cam.position.set(2f, 2f, 2f);
         cam.lookAt(0,0,0);
         cam.near = 1f;
         cam.far = 300f;
@@ -59,20 +56,25 @@ public class BehindTheScenesTest3 implements ApplicationListener {
         camController = new CameraInputController(cam);
         Gdx.input.setInputProcessor(camController);
 
-        ModelLoader modelLoader = new G3dModelLoader(new JsonReader());
-        ModelData modelData = modelLoader.loadModelData(Gdx.files.internal(data+"/invaderscene.g3dj"));
-        model = new Model(modelData, new TextureProvider.FileTextureProvider());
+        ModelBuilder modelBuilder = new ModelBuilder();
+        model = modelBuilder.createSphere(2f, 2f, 2f, 20, 20,
+                new Material(),
+                VertexAttributes.Usage.Position | VertexAttributes.Usage.Normal | VertexAttributes.Usage.TextureCoordinates);
 
-        NodePart blockPart = model.getNode("ship").parts.get(0);
-
+        NodePart blockPart = model.nodes.get(0).parts.get(0);
         renderable = new Renderable();
-        renderable.meshPart.set(blockPart.meshPart);
-        renderable.material = blockPart.material;
-        renderable.environment = environment;
+        blockPart.setRenderable(renderable);
+        renderable.environment = null;
         renderable.worldTransform.idt();
+        //下面一段是讲着色器切换为只渲染顶点的模式
+/*
+        renderable.meshPart.primitiveType = GL20.GL_POINTS;
+*/
 
         renderContext = new RenderContext(new DefaultTextureBinder(1, 1));
-        shader = new DefaultShader(renderable);
+        String vert = Gdx.files.internal( shaders+"test.vertex.glsl").readString();
+        String frag = Gdx.files.internal(shaders+"test.fragment.glsl").readString();
+        shader = new DefaultShader(renderable, new DefaultShader.Config(vert, frag));
         shader.init();
     }
 //stools.assetaddress("loadscene/spacesphere.obj")
