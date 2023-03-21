@@ -24,7 +24,7 @@ public class xiangqitest implements ApplicationListener {
    //上一帧结束到现在经过的时间
     private chess chess1;
     private float chessheight;
-    private float graphicsdeltaTime;
+    private float deltaTime;
     //判断是否正在加载
     public boolean loading;
     public AssetManager assets;
@@ -43,6 +43,7 @@ public class xiangqitest implements ApplicationListener {
     private boolean key0;
     private Array<chess> chessArray;
     private float chessy=0;
+    private int circle=0;
     @Override
     public void create () {
 
@@ -53,14 +54,14 @@ public class xiangqitest implements ApplicationListener {
         chessArray=new Array<chess>();
         key0=false;
         chess1 =new chess();
-        graphicsdeltaTime=0;
+        deltaTime=0;
         direction=new Vector3(-3,0,-3);
         step=0;
         modelBatch = new ModelBatch();
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-        Gdx.graphics.setWindowedMode(1920,1080);
+        Gdx.graphics.setWindowedMode(800,600);
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(7f, 7f, 100f);
         cam.lookAt(0,0,0);
@@ -117,9 +118,16 @@ public class xiangqitest implements ApplicationListener {
 
     @Override
     public void render() {
+        circle++;
+        if(circle>=60&&!loading)
+        {
+            circle=0;
+            Gdx.graphics.setTitle(Float.toString( chessArray.first().GetLocation().y));
+        }
+
         if (loading && assets.update())
             doneLoading();
-        graphicsdeltaTime=Gdx.graphics.getDeltaTime();
+        deltaTime=Gdx.graphics.getDeltaTime();
         if(!Gdx.input.isButtonPressed(0)){
             if ((!key0) && Gdx.input.isTouched())
                 camController.touchDown(Gdx.input.getX(), Gdx.input.getY(), 0, 0);
@@ -132,10 +140,11 @@ public class xiangqitest implements ApplicationListener {
         }
         else
         {
-            Ray ray = cam.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-            vector3Temp3 =(vector3Temp1.set(cam.position).add(vector3Temp2.set(ray.direction).setLength((cam.position.y-chessheight)/(ray.direction.dot(0,-1,0)/ray.direction.len()))) ).sub(chessArray.first().GetLocation());
-            vector3Temp3.y=0;
-            chessArray.first().TranslateByVector3(vector3Temp3.setLength(vector3Temp3.len()*Gdx.graphics.getDeltaTime()*1));
+           chessArray.first().startPathAnimation();
+        }
+        for (chess chess1 : chessArray
+             ) {
+            chess1.runPathAnimation(deltaTime,false);
         }
         cam.update();
         key0=Gdx.input.isTouched();
@@ -150,6 +159,7 @@ public class xiangqitest implements ApplicationListener {
         if (space != null)
             modelBatch.render(space);
         modelBatch.end();
+
     }
 
     @Override
