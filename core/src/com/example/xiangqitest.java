@@ -18,6 +18,10 @@ import com.badlogic.gdx.utils.Array;
 import com.com.Gameinstance.*;
 import com.tools.stools;
 import com.badlogic.gdx.math.Vector3;
+
+import java.util.ArrayList;
+import java.util.Random;
+
 public class xiangqitest implements ApplicationListener {
     private Vector3 vector3Temp1;
     private Vector3 vector3Temp2;private Vector3 vector3Temp3;private Vector3 vector3Temp4;
@@ -44,6 +48,10 @@ public class xiangqitest implements ApplicationListener {
     private Array<chess> chessArray;
     private float chessy=0;
     private int circle=0;
+    private boolean[][] redchess;
+    private boolean[][] blackchess;
+    private Array<Integer> reddeadchess;
+    private Array<Integer> blackdeadchess;
     @Override
     public void create () {
 
@@ -104,9 +112,116 @@ public class xiangqitest implements ApplicationListener {
             }
             else
             {
+                chess chess0=new chess(instance);
                 instances.add(instance);
-                chessArray.add(new chess(instance));
+                switch (id) {
+                    case "R-che001":
+                        chess0.setqipanLocation(-4,-5);
+                        break;
+                    case "R-ma001":
+                        chess0.setqipanLocation(-3,-5);
+                        break;
+                    case "R-xiang001":
+                        chess0.setqipanLocation(-2,-5);
+                        break;
+                    case "R-shi001":
+                        chess0.setqipanLocation(-1,-5);
+                        break;
+                    case "R-jiang001":
+                        chess0.setqipanLocation(0,-5);
+                        break;
+                    case "R-shi002":
+                        chess0.setqipanLocation(1,-5);
+                        break;
+                    case "R-xiang002":
+                        chess0.setqipanLocation(2,-5);
+                        break;
+                    case "R-ma002":
+                        chess0.setqipanLocation(3,-5);
+                        break;
+                    case "R-che002":
+                        chess0.setqipanLocation(4,-5);
+                        break;
+                    case "R-bing001":
+                        chess0.setqipanLocation(-4,-2);
+                        break;
+                    case "R-bing002":
+                        chess0.setqipanLocation(-2,-2);
+                        break;
+                    case "R-bing003":
+                        chess0.setqipanLocation(0,-2);
+                        break;
+                    case "R-bing004":
+                        chess0.setqipanLocation(2,-2);
+                        break;
+                    case "R-bing005":
+                        chess0.setqipanLocation(4,-2);
+                        break;
+                    case "R-pao001":
+                        chess0.setqipanLocation(-3,-3);
+                        break;
+                    case "R-pao002":
+                        chess0.setqipanLocation(3,-3);
+                        break;
+                    case "B-che001":
+                        chess0.setqipanLocation(-4,5);
+                        break;
+                    case "B-ma001":
+                        chess0.setqipanLocation(-3,5);
+                        break;
+                    case "B-xiang001":
+                        chess0.setqipanLocation(-2,5);
+                        break;
+                    case "B-shi001":
+                        chess0.setqipanLocation(-1,5);
+                        break;
+                    case "B-jiang001":
+                        chess0.setqipanLocation(0,5);
+                        break;
+                    case "B-shi002":
+                        chess0.setqipanLocation(1,5);
+                        break;
+                    case "B-xiang002":
+                        chess0.setqipanLocation(2,5);
+                        break;
+                    case "B-ma002":
+                        chess0.setqipanLocation(3,5);
+                        break;
+                    case "B-che002":
+                        chess0.setqipanLocation(4,5);
+                        break;
+                    case "B-bing002":
+                        chess0.setqipanLocation(-4,2);
+                        break;
+                    case "B-bing003":
+                        chess0.setqipanLocation(-2,2);
+                        break;
+                    case "B-bing004":
+                        chess0.setqipanLocation(0,2);
+                        break;
+                    case "B-bing005":
+                        chess0.setqipanLocation(2,2);
+                        break;
+                    case "B-bing006":
+                        chess0.setqipanLocation(4,2);
+                        break;
+                    case "B-pao001":
+                        chess0.setqipanLocation(-3,3);
+                        break;
+                    case "B-pao002":
+                        chess0.setqipanLocation(3,3);
+                        break;
+                }
+                chessArray.add(chess0);
+
             }
+        }
+        for (chess chess0:chessArray
+             ) {
+            chess0.qipanLocationRefresh();
+/*
+            System.out.println("chessX= "+chess0.GetLocation().x+"  chessY= "+chess0.GetLocation().y+"  chessZ= "+chess0.GetLocation().z);
+*/
         }
         Vector3 location = chessArray.first().GetLocation();
         chessheight=location.y;
@@ -140,7 +255,14 @@ public class xiangqitest implements ApplicationListener {
         }
         else
         {
-           chessArray.first().startPathAnimation();
+            Random random=new Random();
+            int randomx=random.nextInt(9)-4;
+            int randomy=random.nextInt(10)-5;
+            if (randomy>=0)
+            {
+                randomy++;
+            }
+            chessArray.first().createPathAnimation(randomx,randomy);
         }
         for (chess chess1 : chessArray
              ) {
@@ -152,7 +274,6 @@ public class xiangqitest implements ApplicationListener {
         Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT|(Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
         //Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT | (Gdx.graphics.getBufferFormat().coverageSampling?GL20.GL_COVERAGE_BUFFER_BIT_NV:0));
-        float deltaTime = Gdx.graphics.getDeltaTime();
         modelBatch.begin(cam);
         //渲染instances集合,把所有模型都渲染
         modelBatch.render(instances, environment);
