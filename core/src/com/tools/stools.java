@@ -1,6 +1,7 @@
 package com.tools;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
+import com.badlogic.gdx.math.BSpline;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.BoundingBox;
 
@@ -53,6 +54,14 @@ public abstract class stools {
 
             }
             return out;
+    }
+    public static Vector3 qipanLocationToLocation(boolean RB,int num, Vector3 out)
+    {
+        if(RB)
+        {
+
+        }
+        return out;
     }
     public static Vector3[] CreateQipanTralationKeyVector(Vector3[] dataset,int s_x,int s_y,int e_x,int e_y,Vector3 temp) {
         dataset[0].set(qipanLocationToLocation(s_x, s_y, temp));

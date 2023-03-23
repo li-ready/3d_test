@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(120);
 		config.setTitle("My GDX Game");
 		//config.setBackBufferConfig(8, 8, 8, 8, 16, 0, 4);
-		new Lwjgl3Application(new ShapeTest(), config);
+		new Lwjgl3Application(new xiangqitest(), config);
 	}
 }

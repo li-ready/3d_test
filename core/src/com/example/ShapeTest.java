@@ -131,7 +131,6 @@ public class ShapeTest extends InputAdapter implements ApplicationListener {
         environment = new Environment();
         environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.4f, 0.4f, 0.4f, 1f));
         environment.add(new DirectionalLight().set(0.8f, 0.8f, 0.8f, -1f, -0.8f, -0.2f));
-
         cam = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         cam.position.set(0f, 7f, 10f);
         cam.lookAt(0, 0, 0);
@@ -167,6 +166,7 @@ public class ShapeTest extends InputAdapter implements ApplicationListener {
             if (id.equals("ship")) {
                 if (shipShape == null) {
                     instance.calculateBoundingBox(bounds);
+
                     shipShape = new Sphere(bounds);
                 }
                 instance.shape = shipShape;
