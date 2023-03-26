@@ -14,7 +14,7 @@
  * limitations under the License.
  ******************************************************************************/
 
-package com.com.Gameinstance;
+package com.Gameinstance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;

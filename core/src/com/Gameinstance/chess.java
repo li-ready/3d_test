@@ -1,4 +1,4 @@
-package com.com.Gameinstance;
+package com.Gameinstance;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Camera;
@@ -7,13 +7,19 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.utils.Array;
-import com.com.itf.Shape;
+import com.itf.Shape;
 import com.tools.stools;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class chess extends ModelInstance {
+ public int getRole_id() {
+  return Role_id;
+ }
+
+ public void setRole_id(int role_id) {
+  Role_id = role_id;
+ }
+
+ private int Role_id=0;
  public boolean isCamp() {
   return camp;
  }

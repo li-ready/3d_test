@@ -1,10 +1,7 @@
-package com.com.Gameinstance.ChessKid;
+package com.Gameinstance.ChessKid;
 
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.com.Gameinstance.chess;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import com.Gameinstance.chess;
 
 public class Pao extends chess {
     public Pao(Model model, String rootNode, boolean mergeTransform) {

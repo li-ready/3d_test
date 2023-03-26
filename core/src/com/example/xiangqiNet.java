@@ -1,7 +1,9 @@
 package com.example;
 
+import com.Gameinstance.ChessKid.*;
+import com.Gameinstance.cameraInputTest;
+import com.Gameinstance.chess;
 import com.Net.NetManagerC;
-import com.Net.NetThread;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -23,14 +25,11 @@ import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
-import com.Gameinstance.ChessKid.*;
-import com.Gameinstance.cameraInputTest;
-import com.Gameinstance.chess;
 import com.itf.ClientNetListener;
 import com.itf.Shape;
 import com.tools.stools;
 
-public class xiangqitest extends InputAdapter implements ApplicationListener, ClientNetListener {
+public class xiangqiNet extends InputAdapter implements ApplicationListener, ClientNetListener {
     public NetManagerC getNetmanager() {
         return Netmanager;
     }
@@ -38,6 +37,8 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
     public void setNetmanager(NetManagerC netmanager) {
         Netmanager = netmanager;
         RB= Netmanager.port==6666;
+        roundControl=(Netmanager.port==6666)?1:-1;
+
     }
 
     private NetManagerC Netmanager;
@@ -86,7 +87,7 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
     private int selecting=-1;//正在被选的棋子编号
     private int selected=-1;//已经被选的棋子编号
     private float waitTakenTime =0;
-    private boolean RB=true;
+    public boolean RB=true;
     private Vector2[][] qipanDot;
     private float time;
 
@@ -347,7 +348,8 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
     @Override
     public void render() {
         visibleCount = 0;
-        time+=roundControl==-1?Gdx.graphics.getDeltaTime():0;
+        time+=Gdx.graphics.getDeltaTime();
+        //time+=roundControl==-1?Gdx.graphics.getDeltaTime():0;
         if (loading && assets.update())
             doneLoading();
         deltaTime=Gdx.graphics.getDeltaTime();
@@ -361,11 +363,12 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
             }
         }
         if(time>=2f){
-            if(roundControl==-1){
+            System.out.println(roundControl);
+            /*if(roundControl==-1){
                 System.out.println("you round");//待删除
                 roundControl=1;
                 RB=!RB;
-            }
+            }*/
            time=0f;
         }
         for (chess chess1 : chessArray
@@ -406,6 +409,7 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
         stringBuilder.append(" FPS: ").append(Gdx.graphics.getFramesPerSecond());
         stringBuilder.append(" Visible: ").append(visibleCount);
         stringBuilder.append(" Selected: ").append(roundControl);
+        stringBuilder.append(" Selecting: ").append(selecting);
         label.setText(stringBuilder);
         stage.draw();
     }
@@ -522,7 +526,6 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
                         //System.out.println("selecting chess 3Dx= " +chessArray.get(selecting).transform.getTranslation(vector3Temp3).z+"  y= "+chessArray.get(selecting).transform.getTranslation(vector3Temp3).x);
                         //System.out.println("selecting chess x= " +chessArray.get(selecting).getQipanx()+"  y= "+chessArray.get(selecting).getQipany());
                         setSelected(selecting);
-
                         selecting = -1;
                         roundControl = 2;
                     } else {
@@ -540,9 +543,10 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
                                 if (chessArray.get(selected).takeqiJudge(chessArray.get(selecting), chessFenbu)) {
                                     roundControl = -1;
                                     //服务器功能待恢复
-                                    //Netmanager.takeqi(chessArray.get(selected).getRole_id(),chessArray.get(selecting).getRole_id());
+                                    Netmanager.takeqi(chessArray.get(selected).getRole_id(),chessArray.get(selecting).getRole_id());
                                     takeChess(chessArray.get(selected), selecting);
                                     setSelected(-1);
+                                    selecting = -1;
                                     //发送信号:吃棋
                                     //调用将军提醒
                                 } else {
@@ -558,7 +562,7 @@ public class xiangqitest extends InputAdapter implements ApplicationListener, Cl
                             System.out.println("bath3");//待删除
                             roundControl = -1;
                             //服务器功能待恢复
-                            //Netmanager.zouqi(chessArray.get(selected).getRole_id(),i-4,j-5);
+                            Netmanager.zouqi(chessArray.get(selected).getRole_id(),i-4,j-5);
                             //向服务器发送走棋指令
                             System.out.println("x out="+(i-4)+"  y out="+(j-5));
                             chessArray.get(selected).createPathAnimation(i - 4, j - 5, chessFenbu);

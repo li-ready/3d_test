@@ -1,4 +1,4 @@
-package com.com.itf;
+package com.itf;
 
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 

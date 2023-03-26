@@ -1,7 +1,7 @@
-package com.com.Gameinstance.ChessKid;
+package com.Gameinstance.ChessKid;
 
 import com.badlogic.gdx.graphics.g3d.Model;
-import com.com.Gameinstance.chess;
+import com.Gameinstance.chess;
 
 public class Che extends chess {
     public Che(Model model, String rootNode, boolean mergeTransform) {

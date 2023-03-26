@@ -1,4 +1,4 @@
-package com.com.itf;
+package com.itf;
 
 public interface Black {
 }

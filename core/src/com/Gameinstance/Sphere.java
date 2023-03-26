@@ -1,12 +1,10 @@
-package com.com.Gameinstance;
+package com.Gameinstance;
 
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.collision.Ray;
-import com.com.AbstractInstance.BaseShape;
-import com.com.itf.Shape;
+import com.itf.Shape;
 
 public class Sphere implements Shape {
     public float radius;

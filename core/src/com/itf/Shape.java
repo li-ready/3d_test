@@ -1,4 +1,4 @@
-package com.com.itf;
+package com.itf;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.collision.Ray;
